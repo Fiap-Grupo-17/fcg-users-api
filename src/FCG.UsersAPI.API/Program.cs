@@ -8,6 +8,7 @@ using FCG.UsersAPI.Application.Identidade.Validators;
 using FCG.UsersAPI.Infrastructure;
 using FCG.UsersAPI.Infrastructure.Persistencia;
 using FCG.UsersAPI.Infrastructure.Persistencia.Seed;
+using Prometheus;
 using Microsoft.EntityFrameworkCore;
 
 // Em Testing, NÃO inicializa o UseSerilog para evitar "The logger is already frozen"
@@ -89,6 +90,8 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+app.UseHttpMetrics();
+
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 // Swagger disponível em todos os ambientes exceto Production
@@ -134,6 +137,8 @@ app.MapUsuarioEndpoints();
         }
     }
 }
+
+app.MapMetrics(); // /metrics endpoint do Prometheus
 
 if (!isTestEnv) Log.Information("FCG Users API iniciando...");
 await app.RunAsync();
