@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Instalar o .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restaurar dependências
+        run: dotnet restore FCG.UsersAPI.sln
+
+      - name: Compilar
+        run: dotnet build FCG.UsersAPI.sln --configuration Release --no-restore
+
+      - name: Rodar testes
+        run: dotnet test FCG.UsersAPI.sln --configuration Release --no-build --verbosity normal
