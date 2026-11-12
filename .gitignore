@@ -8,3 +8,6 @@ obj/
 .idea/
 *.log
 nupkg/
+
+# Segredos locais
+k8s/secret.yaml
