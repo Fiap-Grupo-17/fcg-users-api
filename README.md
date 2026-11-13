@@ -37,19 +37,29 @@ Microsserviço responsável por **cadastro, autenticação (JWT) e autorização
 
 | Variável | Descrição | Padrão |
 |---|---|---|
-| `ConnectionStrings__Postgres` | Connection string do PostgreSQL | — |
-| `Jwt__Secret` | Secret HMAC SHA256 (mín. 32 chars) | — |
+| `ConnectionStrings__Postgres` | Connection string do PostgreSQL | — (via Secret/.env) |
+| `Jwt__Secret` | Secret HMAC SHA256 (mín. 32 chars) | — (via Secret/.env) |
 | `Jwt__Issuer` | Issuer do token | `fcg-users-api` |
 | `Jwt__Audience` | Audience do token | `fcg-platform` |
 | `RabbitMQ__Host` | Host do RabbitMQ | `localhost` |
 | `RabbitMQ__Username` | Usuário RabbitMQ | `guest` |
-| `RabbitMQ__Password` | Senha RabbitMQ | `guest` |
+| `RabbitMQ__Password` | Senha RabbitMQ | — (via Secret/.env) |
 | `SeedAdmin__Email` | E-mail do admin inicial | `admin@fcg.com` |
-| `SeedAdmin__Senha` | Senha do admin inicial | `TrocarEm@2026` |
+| `SeedAdmin__Senha` | Senha do admin inicial | — (via Secret/.env) |
+
+## Segredos
+
+O repositório é público, então **nenhuma credencial é versionada**. Os arquivos
+`.env` (Docker Compose) e `k8s/secret.yaml` (Kubernetes) estão no `.gitignore`.
+O repositório traz apenas os modelos `.env.example` e `k8s/secret.example.yaml`,
+com placeholders. Em produção (AKS), os valores são aleatórios, criados fora do Git.
 
 ## Executar com Docker Compose
 
+Copie o modelo de variáveis e preencha os valores (o `.env` não é versionado):
+
 ```bash
+cp .env.example .env        # no PowerShell: Copy-Item .env.example .env
 docker compose up -d --build
 ```
 
@@ -77,9 +87,19 @@ dotnet ef migrations add Initial \
 
 ## Deploy Kubernetes
 
+Crie o Secret a partir do modelo (o `secret.yaml` é ignorado pelo Git), troque cada
+`<placeholder>` por um valor seu e aplique os arquivos **um a um**.
+
+> Não use `kubectl apply -f k8s/`: isso aplicaria também o `secret.example.yaml`,
+> com placeholders no lugar dos valores reais.
+
 ```bash
+cp k8s/secret.example.yaml k8s/secret.yaml   # PowerShell: Copy-Item
+# edite k8s/secret.yaml
+
 kubectl apply -f k8s/namespace.yaml
-kubectl apply -f k8s/
+kubectl apply -f k8s/secret.yaml
+kubectl apply -f k8s/configmap.yaml -f k8s/deployment.yaml -f k8s/service.yaml
 kubectl get pods -n fcg
 ```
 
