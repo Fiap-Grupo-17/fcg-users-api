@@ -41,6 +41,7 @@ services:
       RabbitMQ__Host: rabbitmq
       RabbitMQ__Username: guest
       RabbitMQ__Password: "${RABBITMQ_PASSWORD:?Defina RABBITMQ_PASSWORD no arquivo .env}"
+      SeedAdmin__Senha: "${SEED_ADMIN_PASSWORD:?Defina SEED_ADMIN_PASSWORD no arquivo .env}"
     depends_on:
       postgres:
         condition: service_healthy

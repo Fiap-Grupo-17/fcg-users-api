@@ -23,6 +23,8 @@ public class SeedData
         if (!_cfg.Habilitado) { _logger.LogInformation("Seed do Admin desabilitado."); return; }
         if (await _repo.EmailExisteAsync(_cfg.Email, ct))
         { _logger.LogInformation("Seed Admin: usuário já existe ({Email}).", _cfg.Email); return; }
+        if (string.IsNullOrWhiteSpace(_cfg.Senha))
+        { _logger.LogWarning("Seed Admin ignorado: SeedAdmin:Senha não foi configurada."); return; }
         var email = new Email(_cfg.Email);
         var hash = _hasher.Gerar(_cfg.Senha);
         var admin = new Usuario(_cfg.Nome, email, hash, TipoUsuario.Administrador);
