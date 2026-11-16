@@ -50,7 +50,7 @@ public static class DependencyInjection
                     configuration["RabbitMQ:VirtualHost"] ?? "/", h =>
                     {
                         h.Username(configuration["RabbitMQ:Username"] ?? "guest");
-                        h.Password(configuration["RabbitMQ:Password"] ?? "guest");
+                        h.Password(configuration["RabbitMQ:Password"] ?? "");
                     });
                 cfg.ConfigureEndpoints(ctx);
             });
